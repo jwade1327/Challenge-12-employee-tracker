@@ -1,11 +1,13 @@
 const inquirer = require('inquirer');
-const db = require('./db');
 const consoleTable = require('console.table');
-const connection = require('./db/connection');
+const mysql = require('mysql2');
 
-function start() {
-    menu();
-}
+const connection = mysql.createConnection({
+    host: 'localhost',
+    port: 3306,
+    user: 'root',
+    database: 'employeeDB'
+});
 
 function menu() {
     inquirer
@@ -14,7 +16,13 @@ function menu() {
             name: 'menuChoice',
             message: 'What would you like to do?',
             choices: [
-                'View All Employees', 'View All Employees By Department', 'View All Employees By Manager', 'Add Employee', 'Remove Employee', 'Update Employee Role', 'Update Employee Manager'
+                'View All Employees', 
+                'View All Departments', 
+                'View All Roles', 
+                'Add Employee',
+                'Add Department', 
+                'Update Employee Role', 
+                'Update Employee Manager'
             ]
         }])
         .then(userChoice => {
@@ -23,20 +31,20 @@ function menu() {
                     viewAllEmployees();
                     break;
 
-                case 'View All Employees By Department':
-                    viewAllEmployeesByDepartment();
+                case 'View All Departments':
+                    viewAllDepartments();
                     break;
 
-                case 'View All Employees By Manager':
-                    viewAllEmployeesByManager();
+                case 'View All Roles':
+                    viewAllRoles();
                     break;
 
                 case 'Add Employee':
                     addEmployee();
                     break;
 
-                case 'Remove Employee':
-                    removeEmployee();
+                case 'Add Department':
+                    addDepartment();
                     break;
 
                 case 'Update Employee Role':
@@ -49,12 +57,10 @@ function menu() {
             }
         })
     }
+menu();
 
 function viewAllEmployees() {
-    const params = {};
-    const query = connection.query(
-        'SELECT * FROM employee',
-        params,
+    connection.query('SELECT * FROM employee',
         function (err, res) {
             if (err) throw err;
             let values = [res]
@@ -64,11 +70,8 @@ function viewAllEmployees() {
     )
 };
 
-function viewAllEmployeesByDepartment() {
-    const params = {};
-    const query = connection.query(
-        'SELECT * FROM department',
-        params,
+function viewAllDepartments() {
+    connection.query('SELECT * FROM department',
         function (err, res) {
             if (err) throw err;
             let values = [res]
@@ -77,6 +80,73 @@ function viewAllEmployeesByDepartment() {
         }
     )
 };
+
+function viewAllRoles() {
+    connection.query('SELECT * FROM role',
+    function (err, res) {
+        if (err) throw err;
+        let values = [res]
+        console.table(values[0]);
+        menu();
+    })
+};
+
+function addEmployee() {
+    inquirer
+        .prompt([
+            {
+                type: 'input',
+                message: 'Employee first name',
+                name: 'firstName'
+            },
+            {
+                type: 'input',
+                message: 'Employee last name',
+                name: 'lastName'
+            }
+        ])
+        .then(function(answer) {
+            connection.query('INSERT INTO employee SET ?',
+            {
+                first_name: answer.firstName,
+                last_name: answer.lastName,
+                role_id: null,
+                manager_id: null
+            },
+            function (err, answer) {
+                if (err) throw err;
+            });
+            console.table(answer);
+        menu();
+    });
+};
+
+function addDepartment() {
+    inquirer
+        .prompt({
+            type: 'input',
+            message: 'Department name?',
+            name: 'department'
+        })
+        .then(function(answer) {
+            connection.query('INSERT INTO department SET ?',
+            {
+                name: answer.department
+            },
+            function(err, answer) {
+                if (err) throw err;
+            });
+            console.table(answer);
+        menu();
+    });
+};
+
+function updateEmployeeRole() {
+    connection.query('SELECT first_name, last_name, id FROM employees',
+    function (err, res) {
+
+    })
+}
 
 
 
