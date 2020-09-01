@@ -1,6 +1,3 @@
-DROP TABLE IF EXISTS employee;
-USE employees;
-
 INSERT INTO department (name)
 VALUES
     ('Sales'),

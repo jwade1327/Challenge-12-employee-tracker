@@ -1,5 +1,5 @@
 DROP TABLE IF EXISTS employee_db;
-CREATE DATABASE exployee_db;
+CREATE DATABASE employee_db;
 
 USE employee_db;
 
