@@ -3,20 +3,20 @@ const consoleTable = require('console.table');
 const mysql = require('mysql2');
 const db = require('.');
 
-// const connection = mysql.createConnection({
-//     host: 'localhost',
-//     port: 3306,
-//     user: 'root',
-//     database: 'employee_db',
-//     password: 'R@ven3mmett1327'
-// });
+const connection = mysql.createConnection({
+    host: 'localhost',
+    port: 3306,
+    user: 'root',
+    database: 'employee_db',
+    password: ''
+});
 
-// connection.connect(function(err) {
-//     if (err) throw err;
-//     console.log("connected as id " + connection.threadId);
+connection.connect(function(err) {
+    if (err) throw err;
+    console.log("connected as id " + connection.threadId);
 
-//     menu();
-// });
+    menu();
+});
 
 function menu() {
     inquirer
@@ -31,7 +31,8 @@ function menu() {
                 'Add Employee',
                 'Add Department', 
                 'Update Employee Role', 
-                'Update Employee Manager'
+                'Update Employee Manager',
+                'Exit'
             ]
         }])
         .then(result => {
@@ -64,8 +65,9 @@ function menu() {
                     updateEmployeeRole();
                     break;
 
-                default:
+                case 'Exit':
                     exit();
+                    break;
             }
         });
     }
